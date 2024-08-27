@@ -1,0 +1,30 @@
+version: "3"
+
+#------------------------------NETWORK-----------------------------------------------
+networks:
+    internal:
+      driver: bridge
+      ipam:
+        config:
+          - subnet: 172.1.1.0/16
+#------------------------------Redis-----------------------------------------------
+  redis-cluster-main-1:
+    image: redis:5.0.4
+    container_name: redis-cluster-main-1
+    ports:
+      - "7001:6379"
+      - "17001:16379"
+    restart: always
+    #network_mode: "host"
+    logging:
+        driver: 'json-file'
+        options:
+            max-size: '1g'
+    volumes:
+      - ./cluster/config_61791/redis.conf:/usr/local/etc/redis/redis.conf:rw
+      - ./cluster/config_61791/data:/data:rw
+      - /usr/share/zoneinfo/UTC:/etc/localtime
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      internal:
+        ipv4_address: 172.1.1.12
